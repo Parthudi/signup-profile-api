@@ -1,0 +1,31 @@
+const jwt = require('jsonwebtoken')
+const User = require('../models/users')
+const log4js = require("log4js")
+
+
+var logger = log4js.getLogger()
+logger.level = "debug"
+
+
+const auth = async(req, res, next) => {
+    try{
+        const token  = req.header('Authorization').replace('Bearer ', '')
+        const decode = jwt.verify(token, process.env.JWT_SECRET)
+        const user   = await User.findOne({_id: decode._id, 'tokense.token': token })
+        
+        if(!user) {
+            throw new Error()
+          }
+
+        req.token = token    
+        req.user  = user
+        next()
+    } catch(error) {
+        logger.error("Authentication failed")
+      
+        res.status(401).send('error : please authenticate. ')
+    }
+   
+}
+
+module.exports = auth
