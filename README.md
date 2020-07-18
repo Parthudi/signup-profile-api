@@ -62,7 +62,7 @@ It returns a String which is used to be updated specific user . It requires auth
 
 #### GET `/user/delete`
 
-It returns a String which is used to delete specific user . It requires authentication.
+It returns a String which is used to delete a specific user permanently . It requires authentication.
 
 The JWT - `access_token` must be sent on the `Authorization` header as follows: `Authorization: Bearer {jwt}`
 
