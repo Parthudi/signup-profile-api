@@ -8,7 +8,7 @@ const log4js = require("log4js")
 var logger = log4js.getLogger()
 logger.level = "debug"
 
-
+//Its compulsary all the user once need to signup. & generate the token.
 router.post('/user/signup',async (req, res) => { 
 
     try{
@@ -27,6 +27,7 @@ router.post('/user/signup',async (req, res) => {
  
 })
 
+//user performs login by providing email & password of user who had signed in.
 router.post('/user/login' ,auth, async(req, res) => {
     try{
         const user = await User.findByCredential(req.body.email , req.body.password)
@@ -43,10 +44,12 @@ router.post('/user/login' ,auth, async(req, res) => {
    
 })
 
+//for reading the data of the authenticated user only.
 router.get('/user/read' , auth, async(req, res) => {
         res.send(req.user)
 })
 
+//to update any value stored in the database.
 router.patch('/user/update' , auth, async(req, res) => {
     const allowedupdates = ['name' , 'age' , 'email', 'password', 'gender', 'city']
     const keyvalues = Object.keys(req.body)
@@ -71,6 +74,7 @@ router.patch('/user/update' , auth, async(req, res) => {
     }
 })
 
+//this will delete the user from database & user can no more perform activities.
 router.delete('/user/delete', auth, async(req, res) => {
     try {
 

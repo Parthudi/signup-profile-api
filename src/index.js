@@ -7,6 +7,7 @@ const port = process.env.PORT   //for deployment to heroku
 var logger = log4js.getLogger();
 logger.level = "debug";
 
-app.listen(port, () => {           //refactoring because supertest dosent work in file where listen is called
+//this will listen to the application and start the server.
+app.listen(port, () => {           
     logger.debug("Server is running on: " +port);
 })

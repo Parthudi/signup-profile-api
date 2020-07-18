@@ -6,7 +6,7 @@ const log4js = require("log4js")
 var logger = log4js.getLogger()
 logger.level = "debug"
 
-
+//checking the user is valid user or not by matching the token & giving permission to perform task on if the user is authenticated.
 const auth = async(req, res, next) => {
     try{
         const token  = req.header('Authorization').replace('Bearer ', '')

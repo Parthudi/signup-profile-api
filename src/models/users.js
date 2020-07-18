@@ -3,7 +3,7 @@ const validator = require('validator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-
+//through mongoose liberary creating the model and passing objects which are required in the database to store them.
 const userSchema = new mongoose.Schema({
          name: {
                  type: String ,
@@ -66,6 +66,8 @@ const userSchema = new mongoose.Schema({
 
 //this is not accessible without using standard function
 //hash the plain text password before saving
+
+//checking if user updated password or not & if yes then storing the updated again in db in hashed form.
 userSchema.pre('save' , async function(next) {
     const user = this   //catch each message
 
@@ -75,7 +77,7 @@ userSchema.pre('save' , async function(next) {
         next()
 })
 
-
+//while signing in the user will get a token for authenticating
 userSchema.methods.generatetoken = async function()  {
     const user = this
     const secret = process.env.JWT_SECRET
@@ -87,6 +89,7 @@ userSchema.methods.generatetoken = async function()  {
     return token
 }
 
+//while login the user needs to provide email & password of a valid user who had signup.
 userSchema.statics.findByCredential = async(email, password) => {
     const user = await User.findOne({ email })
 
@@ -102,6 +105,7 @@ userSchema.statics.findByCredential = async(email, password) => {
 
     return user
 }
+
 const User = mongoose.model('User', userSchema)    
 
 

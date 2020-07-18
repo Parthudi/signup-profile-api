@@ -1,13 +1,13 @@
 const express = require('express')    
 require('./db/mongoose')
 const useRouter = require('./routers/user')
+const { application } = require('express')
 
-
-const app  = express()        //refactoring because supertest dosent work in file where listen is called & 
-                             //as express application & listen call were in same file we refactore express in another file
+//connecting express server to out application.
+const app  = express()       
 
 app.use(express.json()) //automatically parse an incoming json data into object
-app.use(useRouter)
+app.use(useRouter)      //for using the router present in another file
 
 
 module.exports = app
