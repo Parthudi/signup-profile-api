@@ -11,3 +11,6 @@ logger.level = "debug";
 app.listen(port, () => {           
     logger.debug("Server is running on: " +port);
 })
+
+//to force github to push the code to github
+//git push -f origin master

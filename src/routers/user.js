@@ -1,25 +1,30 @@
 const express = require('express')
 const router = new express.Router()  // to create new router
 const User = require('../models/users')
-const auth = require('../middleware/auth')
+const {auth} = require('../middleware/auth')
 const log4js = require("log4js")
-
+const {sendingWelcomeMail} = require('../email-verification/sendmail')
 
 var logger = log4js.getLogger()
 logger.level = "debug"
 
 //Its compulsary all the user once need to signup. & generate the token.
-router.post('/user/signup',async (req, res) => { 
+router.post('/user/signup', async (req, res) => { 
 
     try{
     const me = new User(req.body)
 
         await me.save()
+
+        const generatestr = await me.generatestring()
+       
+        sendingWelcomeMail(me.email, me.name,  generatestr)
+
         const token = await me.generatetoken()
         
-
         res.status(201).send({me, token})
         logger.debug("New User Signedin")
+
     } catch(error) {
         logger.error("Unable to signin")
         res.status(400).send(error)
@@ -30,14 +35,21 @@ router.post('/user/signup',async (req, res) => {
 //user performs login by providing email & password of user who had signed in.
 router.post('/user/login' ,auth, async(req, res) => {
     try{
-        const user = await User.findByCredential(req.body.email , req.body.password)
+       const user = await User.findByCredential(req.body.email , req.body.password ,req.body.otp)
+       const dbstring = user.otp[0].string
 
-        const token = await user.generatetoken()
+        if(req.body.otp ===  dbstring) {
+            const token = await user.generatetoken()
+      
         res.status(200).send({user, token})
-
-        logger.debug("New User login")
-
-        } catch(error) {
+   
+         logger.debug("New User login")
+        }
+        else{
+            res.status(400).send('Wrong OTP')
+            logger.debug("Wrong Otp")
+        }
+ } catch(error) {
             logger.error("Unable to login")
                 res.status(400).send('error occured')
         }

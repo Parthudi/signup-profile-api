@@ -2,6 +2,11 @@ const mongoose  = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const log4js = require("log4js")
+const Str = require('@supercharge/strings')
+
+var logger = log4js.getLogger()
+logger.level = "debug"
 
 //through mongoose liberary creating the model and passing objects which are required in the database to store them.
 const userSchema = new mongoose.Schema({
@@ -51,8 +56,12 @@ const userSchema = new mongoose.Schema({
                      }
                  }
              },
-         
-      
+        otp: [{
+            string: {
+                type: String,
+                required: true
+         }
+        }],
         tokense: [{
             token: {
                 type: String,
@@ -89,8 +98,20 @@ userSchema.methods.generatetoken = async function()  {
     return token
 }
 
+userSchema.methods.generatestring = async function() {
+    const user = this
+    const string = Str.random(9)
+
+    user.otp = user.otp.concat({string})
+
+    await user.save()
+   
+    return string
+}
+ 
 //while login the user needs to provide email & password of a valid user who had signup.
-userSchema.statics.findByCredential = async(email, password) => {
+userSchema.statics.findByCredential = async(email, password, otp) => {
+    
     const user = await User.findOne({ email })
 
     if(!user) {
@@ -102,9 +123,9 @@ userSchema.statics.findByCredential = async(email, password) => {
     if(!isMatch) {
         throw new Error('login failed!!!!')
     }
-
-    return user
+     return user
 }
+
 
 const User = mongoose.model('User', userSchema)    
 
