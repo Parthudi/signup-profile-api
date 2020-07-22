@@ -126,6 +126,14 @@ userSchema.statics.findByCredential = async(email, password, otp) => {
      return user
 }
 
+userSchema.statics.findforget = async(email) => {
+    const user = await User.findOne({ email })
+
+    if(!user) {
+        throw new Error('unable to find user')
+    }
+        return user   
+}
 
 const User = mongoose.model('User', userSchema)    
 

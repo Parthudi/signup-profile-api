@@ -56,10 +56,40 @@ router.post('/user/login' ,auth, async(req, res) => {
    
 })
 
+router.patch('/user/forget', async(req, res) => {
+    const allowedupdates = ['email', 'password']
+    const keyvalues = Object.keys(req.body)
+    const validaton = keyvalues.every((value)=> {
+        return allowedupdates.includes(value)
+    })
+    if(!validaton) {
+        res.status(404).send('input invalid')
+    }
+
+    try {
+        const user = await User.findforget(req.body.email)
+        
+        logger.debug("User found")
+        if(!user) {
+           throw new Error('sorry no user found!! ')
+            }
+           
+        keyvalues.forEach((update) =>  user[update] = req.body[update])
+    
+            await user.save()
+            res.status(202).send(user)
+   
+            logger.debug("Password updated")
+
+        }  catch(error) {
+        res.status(400).send('Unable to forget')
+    }
+})
 //for reading the data of the authenticated user only.
 router.get('/user/read' , auth, async(req, res) => {
         res.send(req.user)
 })
+
 
 //to update any value stored in the database.
 router.patch('/user/update' , auth, async(req, res) => {
